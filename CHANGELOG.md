@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.0.3] - 2025-10-04
+## [1.0.0] - 2025-10-20
 ### Changed
 - Added documentation comments to improve Pub.dev score.
 - Improved code readability and formatting.
@@ -18,17 +18,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Advanced styling options with customizable background and layout settings.
 - Example app updated with background image demonstration.
 
----
 
-## [0.0.1] - 2025-09-XX
-### Added
-- Initial release of **flutter_pdf_flipbook**.
-- `PdfBookViewer` widget with beautiful flip animations.
-- Customizable styling using `PdfBookViewerStyle`.
-- Navigation controls with page-jumping functionality.
-- Zoom support for better reading experience.
-- Page change callbacks for state management.
-- Support for both local and remote PDF URLs.
-- Progressive page loading for performance.
-- Responsive layout for all screen sizes.
-- Comprehensive documentation and example app.

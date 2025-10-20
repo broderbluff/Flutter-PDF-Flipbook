@@ -7,23 +7,36 @@ import '../models/app_state.dart';
 
 class PdfLoader {
   final AppState appState;
+  final String? proxyUrl;
 
-  PdfLoader(this.appState);
+  PdfLoader(this.appState, {this.proxyUrl});
 
   Future<Uint8List> fetchPdfAsBytes(String url) async {
+    // Step 1: Try direct fetch first
     try {
-      final proxyUrl =
-          'https://workers-playground-tiny-snow-5cbb.munawera808.workers.dev?url=${Uri.encodeComponent(url)}';
-      final response = await http.get(Uri.parse(proxyUrl));
-
+      final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
         return response.bodyBytes;
       } else {
-        throw Exception(
-            'Failed to load PDF via Worker. Status: ${response.statusCode}');
+        throw Exception('Direct fetch failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      return Uint8List(0);
+      // Direct fetch failed, try proxy if available
+      if (proxyUrl != null && proxyUrl!.isNotEmpty) {
+        try {
+          final fullProxyUrl = '$proxyUrl${Uri.encodeComponent(url)}';
+          final response = await http.get(Uri.parse(fullProxyUrl));
+          if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
+            return response.bodyBytes;
+          } else {
+            throw Exception('Proxy fetch failed with status: ${response.statusCode}');
+          }
+        } catch (proxyError) {
+          throw Exception('Both direct fetch and proxy fetch failed. Direct error: $e, Proxy error: $proxyError');
+        }
+      } else {
+        throw Exception('Direct fetch failed and no proxy URL provided. Error: $e');
+      }
     }
   }
 

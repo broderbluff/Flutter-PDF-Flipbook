@@ -34,6 +34,10 @@ class PdfBookViewer extends StatefulWidget {
   /// Custom background color
   final Color? backgroundColor;
 
+  /// Optional proxy URL to bypass CORS restrictions
+  /// Example: 'https://your-proxy.com?url='
+  final String? proxyUrl;
+
   const PdfBookViewer({
     Key? key,
     required this.pdfUrl,
@@ -42,6 +46,7 @@ class PdfBookViewer extends StatefulWidget {
     this.onError,
     this.showNavigationControls = true,
     this.backgroundColor,
+    this.proxyUrl,
   }) : super(key: key);
 
   @override
@@ -69,7 +74,7 @@ class _PdfBookViewerState extends State<PdfBookViewer>
     transformationController.addListener(_onTransformationChanged);
 
     /// Initialize services
-    pdfLoader = PdfLoader(appState);
+    pdfLoader = PdfLoader(appState, proxyUrl: widget.proxyUrl);
     animationController = BookAnimationController(
       appState: appState,
       pdfLoader: pdfLoader,

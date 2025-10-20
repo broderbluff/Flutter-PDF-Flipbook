@@ -95,6 +95,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 borderRadius: BorderRadius.circular(8),
                 child: PdfBookViewer(
                   pdfUrl: currentPdfUrl,
+                  // Optional: Add proxy URL to bypass CORS restrictions
+                  // proxyUrl: 'https://your-worker.workers.dev?url=',
                   onPageChanged: (currentPage, totalPages) {
                     setState(() {
                       _currentPage = currentPage.toString();

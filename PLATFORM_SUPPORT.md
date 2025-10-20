@@ -12,7 +12,6 @@ The **flutter_book_flip_plugin** supports all major Flutter platforms:
 | **IOS** | ✅ Fully Supported | Native PDF rendering, animations, background images |
 | **macOS** | ✅ Fully Supported | Native PDF rendering, animations, background images |
 | **Windows** | ✅ Fully Supported | Native PDF rendering, animations, background images |
-| **Linux** | ✅ Fully Supported | Native PDF rendering, animations, background images |
 | **Web** | ✅ Fully Supported | Web-based PDF rendering, animations, background images |
 
 ### 🎯 Common Use Cases Across All Platforms

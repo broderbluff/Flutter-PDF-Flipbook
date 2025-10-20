@@ -92,6 +92,67 @@ PdfBookViewer(
 )
 ```
 
+### CORS and Proxy Configuration
+
+When loading PDFs from external URLs, you may encounter CORS (Cross-Origin Resource Sharing) restrictions. The plugin handles this gracefully:
+
+1. **Direct Fetch First**: The plugin always tries to fetch the PDF directly from the provided URL
+2. **Proxy Fallback**: If direct fetch fails due to CORS restrictions and you provide a `proxyUrl`, it will automatically try the proxy
+3. **Clear Error Messages**: If both methods fail, you'll get descriptive error messages
+
+#### Using a Proxy URL
+
+```dart
+PdfBookViewer(
+  pdfUrl: 'https://example.com/document.pdf',
+  proxyUrl: 'https://your-worker.workers.dev?url=',
+  onError: (error) {
+    print('Error: $error');
+    // Handle error - show dialog, snackbar, etc.
+  },
+)
+```
+
+#### Setting Up a Cloudflare Worker Proxy
+
+If you need a proxy, here's a simple Cloudflare Worker example:
+
+```javascript
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request))
+})
+
+async function handleRequest(request) {
+  const url = new URL(request.url)
+  const targetUrl = url.searchParams.get('url')
+  
+  if (!targetUrl) {
+    return new Response('Missing url parameter', { status: 400 })
+  }
+  
+  try {
+    const response = await fetch(targetUrl)
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET',
+        'Content-Type': response.headers.get('Content-Type') || 'application/pdf'
+      }
+    })
+  } catch (error) {
+    return new Response('Proxy error: ' + error.message, { status: 500 })
+  }
+}
+```
+
+#### Alternative Proxy Solutions
+
+- **Backend Proxy**: Create an endpoint in your backend that fetches and serves PDFs
+- **CDN Proxy**: Use services like Cloudflare, AWS CloudFront, or similar
+- **CORS-Enabled Server**: Configure your PDF server to allow cross-origin requests
+
 ### Configuration Options
 
 #### PdfBookViewer Properties:
@@ -102,6 +163,7 @@ PdfBookViewer(
 - `onError`: Callback when PDF loading fails (error message)
 - `showNavigationControls`: Whether to show navigation controls (default: true)
 - `backgroundColor`: Custom background color
+- `proxyUrl`: Optional proxy URL to bypass CORS restrictions
 
 #### PdfBookViewerStyle Properties:
 
@@ -150,7 +212,6 @@ See the `example/` directory for a complete example app demonstrating all featur
 ✅ **iOS** - Fully supported with native PDF rendering  
 ✅ **macOS** - Fully supported with native PDF rendering
 ✅ **Windows** - Fully supported with native PDF rendering
-✅ **Linux** - Fully supported with native PDF rendering
 ✅ **Web** - Fully supported with web-based PDF rendering
 
 ### Device Types
