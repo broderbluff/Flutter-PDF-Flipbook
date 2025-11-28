@@ -45,17 +45,21 @@ class NavigationControls extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           /// Previous button
-          IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-            onPressed: () => pageNavigation.navigateToPreviousPage(context),
-            tooltip: 'Previous Page',
+          Material(
+            color: Colors.transparent,
+            child: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+              onPressed: () => pageNavigation.navigateToPreviousPage(context),
+              tooltip: 'Previous Page',
+              splashRadius: 24,
+            ),
           ),
 
           SizedBox(width: 16),
 
           /// Page Indicator
           Text(
-            '${appState.currentPage + 1} / ${appState.document?.pagesCount ?? 0}',
+            _getPageText(appState),
             style: TextStyle(
               color: Colors.white,
               fontSize: 14,
@@ -66,13 +70,37 @@ class NavigationControls extends StatelessWidget {
           SizedBox(width: 16),
 
           /// Next button
-          IconButton(
-            icon: Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 20),
-            onPressed: () => pageNavigation.navigateToNextPage(context),
-            tooltip: 'Next Page',
+          Material(
+            color: Colors.transparent,
+            child: IconButton(
+              icon: Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 20),
+              onPressed: () => pageNavigation.navigateToNextPage(context),
+              tooltip: 'Next Page',
+              splashRadius: 24,
+            ),
           ),
         ],
       ),
     );
+  }
+
+  String _getPageText(AppState appState) {
+    final total = appState.document?.pagesCount ?? 0;
+    if (total == 0) return '0 / 0';
+
+    final currentSpread = appState.currentPageComplete;
+
+    if (currentSpread == 0) {
+      return '1 / $total';
+    }
+
+    final startPage = currentSpread * 2;
+    final endPage = startPage + 1;
+
+    if (endPage > total) {
+      return '$startPage / $total';
+    }
+
+    return '$startPage-$endPage / $total';
   }
 }
