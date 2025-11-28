@@ -27,107 +27,49 @@ class NavigationControls extends StatelessWidget {
     final controlStyle = style ?? NavigationControlsStyle();
 
     return Container(
-      width: 320,
-      height: 40,
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.black.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(30),
         boxShadow: [
           controlStyle.shadow ??
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.2),
                 spreadRadius: 1,
-                blurRadius: 5,
-                offset: Offset(0, 2),
+                blurRadius: 10,
+                offset: Offset(0, 4),
               ),
         ],
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-
-        /// Make children fill vertically
+        mainAxisSize: MainAxisSize.min,
         children: [
           /// Previous button
-          Container(
-            decoration: BoxDecoration(
-              color: controlStyle.buttonColor,
-            ),
-            child: IconButton(
-              icon: Icon(Icons.arrow_back, color: controlStyle.iconColor),
-              onPressed: () => pageNavigation.navigateToPreviousPage(context),
+          IconButton(
+            icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+            onPressed: () => pageNavigation.navigateToPreviousPage(context),
+            tooltip: 'Previous Page',
+          ),
+
+          SizedBox(width: 16),
+
+          /// Page Indicator
+          Text(
+            '${appState.currentPage + 1} / ${appState.document?.pagesCount ?? 0}',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
             ),
           ),
 
-          /// TextField for page number
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: Align(
-                alignment: Alignment.center,
-                child: SizedBox(
-                  height: 40,
-                  child: TextField(
-                    controller: pageController,
-                    decoration: InputDecoration(
-                      hintText: "Page #",
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(color: Colors.grey),
-                      contentPadding: EdgeInsets.only(bottom: 8),
-                    ),
-                    style: TextStyle(color: Colors.black),
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          /// Button to navigate to page
-          Container(
-            decoration: BoxDecoration(
-              color: controlStyle.buttonColor,
-            ),
-            child: IconButton(
-              icon: Icon(Icons.search, color: controlStyle.iconColor),
-              onPressed: () {
-                if (pageController.text.isNotEmpty) {
-                  int pageNumber = int.parse(pageController.text);
-                  if ((pageNumber / 2).toInt() == appState.currentPage) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'Page number must be between 1 and ${appState.document!.pagesCount}'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                    return;
-                  }
-                  if (pageNumber > 0 &&
-                      pageNumber <= appState.document!.pagesCount) {
-                    pdfLoader.navigateToPage(pageNumber);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'Page number must be between 1 and ${appState.document!.pagesCount}'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                }
-              },
-            ),
-          ),
+          SizedBox(width: 16),
 
           /// Next button
-          Container(
-            decoration: BoxDecoration(
-              color: controlStyle.buttonColor,
-            ),
-            child: IconButton(
-              icon: Icon(Icons.arrow_forward, color: controlStyle.iconColor),
-              onPressed: () => pageNavigation.navigateToNextPage(context),
-            ),
+          IconButton(
+            icon: Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 20),
+            onPressed: () => pageNavigation.navigateToNextPage(context),
+            tooltip: 'Next Page',
           ),
         ],
       ),
