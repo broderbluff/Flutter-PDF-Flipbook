@@ -253,6 +253,7 @@ class _PdfBookViewerState extends State<PdfBookViewer> with SingleTickerProvider
                                 child: InteractiveViewer(
                                   transformationController: transformationController,
                                   boundaryMargin: EdgeInsets.all(double.infinity),
+                                  minScale: 1.0,
                                   maxScale: 20.0,
                                   child: Center(
                                     child: Container(
