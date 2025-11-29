@@ -229,8 +229,8 @@ class _PdfBookViewerState extends State<PdfBookViewer> with SingleTickerProvider
                               final pageAspectRatio =
                                   appState.pageImages.first.width!.toDouble() / appState.pageImages.first.height!.toDouble();
 
-                              /// Calculate maximum height available (leave some padding)
-                              final maxHeight = screenHeight - (widget.showNavigationControls ? 100 : 50);
+                              /// Calculate maximum height available
+                              final maxHeight = screenHeight;
 
                               /// Calculate width for single page based on aspect ratio
                               final singlePageWidth = maxHeight * pageAspectRatio;
@@ -310,7 +310,6 @@ class _PdfBookViewerState extends State<PdfBookViewer> with SingleTickerProvider
                         );
                 },
               ),
-              SizedBox(height: widget.showNavigationControls ? 50 : 0),
             ],
           ),
           if (widget.showNavigationControls)
