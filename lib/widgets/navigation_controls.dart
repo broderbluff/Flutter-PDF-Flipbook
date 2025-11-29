@@ -24,63 +24,65 @@ class NavigationControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controlStyle = style ?? NavigationControlsStyle();
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.7),
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          controlStyle.shadow ??
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
-                spreadRadius: 1,
-                blurRadius: 10,
-                offset: Offset(0, 4),
+    return ListenableBuilder(
+      listenable: appState,
+      builder: (context, child) {
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              /// Previous button
+              Material(
+                color: Colors.transparent,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: Colors.white.withValues(alpha: 0.8),
+                    size: 20,
+                  ),
+                  onPressed: () => pageNavigation.navigateToPreviousPage(context),
+                  tooltip: 'Previous Page',
+                  splashRadius: 24,
+                ),
               ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          /// Previous button
-          Material(
-            color: Colors.transparent,
-            child: IconButton(
-              icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-              onPressed: () => pageNavigation.navigateToPreviousPage(context),
-              tooltip: 'Previous Page',
-              splashRadius: 24,
-            ),
+
+              SizedBox(width: 16),
+
+              /// Page Indicator
+              Text(
+                _getPageText(appState),
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.8),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+
+              SizedBox(width: 16),
+
+              /// Next button
+              Material(
+                color: Colors.transparent,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: Colors.white.withValues(alpha: 0.8),
+                    size: 20,
+                  ),
+                  onPressed: () => pageNavigation.navigateToNextPage(context),
+                  tooltip: 'Next Page',
+                  splashRadius: 24,
+                ),
+              ),
+            ],
           ),
-
-          SizedBox(width: 16),
-
-          /// Page Indicator
-          Text(
-            _getPageText(appState),
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-
-          SizedBox(width: 16),
-
-          /// Next button
-          Material(
-            color: Colors.transparent,
-            child: IconButton(
-              icon: Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 20),
-              onPressed: () => pageNavigation.navigateToNextPage(context),
-              tooltip: 'Next Page',
-              splashRadius: 24,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
