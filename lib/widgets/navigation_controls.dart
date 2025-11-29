@@ -90,7 +90,7 @@ class NavigationControls extends StatelessWidget {
     final total = appState.document?.pagesCount ?? 0;
     if (total == 0) return '0 / 0';
 
-    final currentSpread = appState.currentPageComplete;
+    final currentSpread = appState.currentPage;
 
     if (currentSpread == 0) {
       return '1 / $total';
