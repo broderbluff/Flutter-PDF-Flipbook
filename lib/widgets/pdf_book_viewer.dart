@@ -45,6 +45,9 @@ class PdfBookViewer extends StatefulWidget {
   /// Optional controller for programmatic control
   final PdfBookController? controller;
 
+  /// Callback when the busy state changes (loading, animating, or swiping)
+  final void Function(bool isBusy)? onIsBusyChanged;
+
   const PdfBookViewer({
     Key? key,
     required this.pdfUrl,
@@ -56,6 +59,7 @@ class PdfBookViewer extends StatefulWidget {
     this.proxyUrl,
     this.initialPage = 0,
     this.controller,
+    this.onIsBusyChanged,
   }) : super(key: key);
 
   @override
@@ -69,6 +73,7 @@ class _PdfBookViewerState extends State<PdfBookViewer> with SingleTickerProvider
   late PageNavigation pageNavigation;
   late TransformationController transformationController;
   TextEditingController pageController = TextEditingController();
+  bool _wasBusy = false;
 
   @override
   void initState() {
@@ -184,6 +189,18 @@ class _PdfBookViewerState extends State<PdfBookViewer> with SingleTickerProvider
         /// Defer the callback to the next frame to avoid setState during build
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.onPageChanged!(currentPage!, totalPages!);
+        });
+      }
+    }
+
+    /// Check for busy state changes
+    final isBusy = appState.isLoading || !appState.isAnimationReady || appState.isSwipeInProgress;
+
+    if (_wasBusy != isBusy) {
+      _wasBusy = isBusy;
+      if (widget.onIsBusyChanged != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          widget.onIsBusyChanged!(isBusy);
         });
       }
     }
