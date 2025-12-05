@@ -3,6 +3,7 @@ import '../models/app_state.dart';
 import '../services/pdf_loader.dart';
 import '../services/book_animation_controller.dart';
 import '../services/page_navigation.dart';
+import '../controllers/pdf_book_controller.dart';
 import 'book_page.dart';
 import 'animated_page.dart';
 import 'navigation_controls.dart';
@@ -38,6 +39,12 @@ class PdfBookViewer extends StatefulWidget {
   /// Example: 'https://your-proxy.com?url='
   final String? proxyUrl;
 
+  /// The initial page index to display (0-based)
+  final int initialPage;
+
+  /// Optional controller for programmatic control
+  final PdfBookController? controller;
+
   const PdfBookViewer({
     Key? key,
     required this.pdfUrl,
@@ -47,6 +54,8 @@ class PdfBookViewer extends StatefulWidget {
     this.showNavigationControls = true,
     this.backgroundColor,
     this.proxyUrl,
+    this.initialPage = 0,
+    this.controller,
   }) : super(key: key);
 
   @override
@@ -74,6 +83,10 @@ class _PdfBookViewerState extends State<PdfBookViewer> with SingleTickerProvider
 
     /// Initialize services
     pdfLoader = PdfLoader(appState, proxyUrl: widget.proxyUrl);
+
+    /// Attach controller if provided
+    widget.controller?.attach(pdfLoader);
+
     animationController = BookAnimationController(
       appState: appState,
       pdfLoader: pdfLoader,
@@ -91,12 +104,18 @@ class _PdfBookViewerState extends State<PdfBookViewer> with SingleTickerProvider
   @override
   void didUpdateWidget(PdfBookViewer oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller?.detach();
+      widget.controller?.attach(pdfLoader);
+    }
+
     if (oldWidget.pdfUrl != widget.pdfUrl) {
       /// Defer state updates to avoid setState during build
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         try {
           _resetState();
-          await pdfLoader.loadPdf(widget.pdfUrl);
+          await pdfLoader.loadPdf(widget.pdfUrl, initialPage: widget.initialPage);
         } catch (e) {
           final errorMsg = 'Failed to load PDF: ${e.toString()}';
           appState.errorMessage = errorMsg;
@@ -124,7 +143,7 @@ class _PdfBookViewerState extends State<PdfBookViewer> with SingleTickerProvider
       appState.errorMessage = null;
 
       /// Clear any previous error
-      await pdfLoader.loadPdf(widget.pdfUrl);
+      await pdfLoader.loadPdf(widget.pdfUrl, initialPage: widget.initialPage);
     } catch (e) {
       final errorMsg = 'Failed to load PDF: ${e.toString()}';
       appState.errorMessage = errorMsg;
@@ -136,6 +155,7 @@ class _PdfBookViewerState extends State<PdfBookViewer> with SingleTickerProvider
 
   @override
   void dispose() {
+    widget.controller?.detach();
     animationController.dispose();
     transformationController.dispose();
     appState.removeListener(_onPageChanged);
@@ -240,8 +260,8 @@ class _PdfBookViewerState extends State<PdfBookViewer> with SingleTickerProvider
 
                               /// Scale down if book is too wide for screen
                               double scaleFactor = 1.0;
-                              if (totalBookWidth > screenWidth * 0.9) {
-                                scaleFactor = (screenWidth * 0.9) / totalBookWidth;
+                              if (totalBookWidth > screenWidth) {
+                                scaleFactor = screenWidth / totalBookWidth;
                               }
 
                               /// Apply scale factor

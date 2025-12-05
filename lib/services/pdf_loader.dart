@@ -40,7 +40,7 @@ class PdfLoader {
     }
   }
 
-  Future<void> loadPdf(String url) async {
+  Future<void> loadPdf(String url, {int initialPage = 0}) async {
     try {
       appState.isLoading = true;
 
@@ -52,13 +52,8 @@ class PdfLoader {
       }
 
       /// Validate PDF format by checking magic bytes
-      if (bytes.length < 4 ||
-          !(bytes[0] == 0x25 &&
-              bytes[1] == 0x50 &&
-              bytes[2] == 0x44 &&
-              bytes[3] == 0x46)) {
-        throw Exception(
-            "Invalid PDF format. File does not appear to be a valid PDF.");
+      if (bytes.length < 4 || !(bytes[0] == 0x25 && bytes[1] == 0x50 && bytes[2] == 0x44 && bytes[3] == 0x46)) {
+        throw Exception("Invalid PDF format. File does not appear to be a valid PDF.");
       }
 
       /// Open PDF document
@@ -74,7 +69,11 @@ class PdfLoader {
       appState.isLoading = false;
 
       /// Load initial pages
-      await loadPages(0, null);
+      if (initialPage > 0 && initialPage < document.pagesCount) {
+        await navigateToPage(initialPage);
+      } else {
+        await loadPages(0, null);
+      }
     } catch (e) {
       appState.isLoading = false;
       throw Exception("Failed to load PDF: $e");

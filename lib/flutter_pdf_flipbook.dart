@@ -10,3 +10,6 @@ export 'models/app_state.dart';
 export 'services/book_animation_controller.dart';
 export 'services/page_navigation.dart';
 export 'services/pdf_loader.dart';
+
+// Export controllers
+export 'controllers/pdf_book_controller.dart';
