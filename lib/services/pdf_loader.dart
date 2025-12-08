@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:pdfx/pdfx.dart';
 import '../models/app_state.dart';
+import '../utils/file_helper.dart';
 
 class PdfLoader {
   final AppState appState;
@@ -14,9 +14,9 @@ class PdfLoader {
 
   Future<Uint8List> fetchPdfAsBytes(String url) async {
     // Check if it's a local file
-    final file = File(url);
-    if (await file.exists()) {
-      return await file.readAsBytes();
+    final fileBytes = await fetchFileBytes(url);
+    if (fileBytes != null) {
+      return fileBytes;
     }
 
     // Step 1: Try direct fetch first
